@@ -1,0 +1,64 @@
+{
+  "punctuation": [
+    {
+      "value": ";",
+      "name": "semicolon"
+    },
+    {
+      "value": ",",
+      "name": "comma"
+    },
+    {
+      "value": "(",
+      "name": "left_parenthesis"
+    },
+    {
+      "value": ")",
+      "name": "right_parenthesis"
+    },
+    {
+      "value": "{",
+      "name": "left_brace"
+    },
+    {
+      "value": "}",
+      "name": "right_brace"
+    },
+    {
+      "value": "[",
+      "name": "left_bracket"
+    },
+    {
+      "value": "]",
+      "name": "right_bracket"
+    },
+    {
+      "value": ".",
+      "name": "dot"
+    },
+    {
+      "value": "+",
+      "name": "add"
+    },
+    {
+      "value": "-",
+      "name": "subtract"
+    },
+    {
+      "value": "/",
+      "name": "divide"
+    },
+    {
+      "value": "%",
+      "name": "modulo"
+    },
+    {
+      "value": "<",
+      "name": "less_than"
+    },
+    {
+      "value": ">",
+      "name": "greater_than"
+    }
+  ]
+}
