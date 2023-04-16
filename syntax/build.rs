@@ -1,5 +1,4 @@
-use std::vec;
-
+use convert_case::{Case, Casing};
 use serde::Deserialize;
 
 const MANIFEST: &str = env!("CARGO_MANIFEST_DIR");
@@ -18,18 +17,12 @@ fn project_root() -> &'static std::path::Path {
 #[derive(Debug, Deserialize)]
 struct Punctuation {
     name: String,
-    value: String,
+    // value: String,
 }
 
 #[derive(Debug, Deserialize)]
 struct SyntaxKind {
     punctuation: Vec<Punctuation>,
-}
-
-macro_rules! generate_syntax_enum {
-    ($elem:expr) => {
-        "ok"
-    };
 }
 
 fn main() {
@@ -54,7 +47,23 @@ fn main() {
 
     let syntax = serde_json::from_str::<SyntaxKind>(&syntax).expect("Could not parse syntax file");
 
-    p!("syntax: {:?}", syntax.punctuation);
+    let mut tokens = format!(
+        "{}\n{}",
+        "#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]", "pub enum SyntaxKind {"
+    );
 
-    let x = generate_syntax_enum!(syntax.punctuation);
+    for token in syntax.punctuation {
+        tokens.push_str(&format!("\n    {},", token.name.to_case(Case::UpperCamel)));
+    }
+    tokens.push_str(&format!("\n    {},", "error".to_case(Case::UpperCamel)));
+
+    tokens.push_str("\n}");
+
+    let out_dir =
+        std::path::PathBuf::from(std::env::var("OUT_DIR").expect("Could not get OUT_DIR"));
+
+    let out_file = out_dir.join("syntax_enum.rs");
+    std::fs::write(&out_file, tokens.as_bytes()).expect("Could not write syntax_enum.rs");
+
+    p!("syntax: {:?}", out_file);
 }
