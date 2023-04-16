@@ -17,7 +17,7 @@ fn project_root() -> &'static std::path::Path {
 #[derive(Debug, Deserialize)]
 struct Punctuation {
     name: String,
-    // value: String,
+    value: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -47,23 +47,37 @@ fn main() {
 
     let syntax = serde_json::from_str::<SyntaxKind>(&syntax).expect("Could not parse syntax file");
 
-    let mut tokens = format!(
+    let mut out_stream = format!(
         "{}\n{}",
         "#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]", "pub enum SyntaxKind {"
     );
 
-    for token in syntax.punctuation {
-        tokens.push_str(&format!("\n    {},", token.name.to_case(Case::UpperCamel)));
+    for token in &syntax.punctuation {
+        out_stream.push_str(&format!("\n    {},", token.name.to_case(Case::UpperCamel)));
     }
-    tokens.push_str(&format!("\n    {},", "error".to_case(Case::UpperCamel)));
 
-    tokens.push_str("\n}");
+    out_stream.push_str("\n}");
+
+    out_stream.push_str("\n\npub fn match_token(token: &str) -> Option<SyntaxKind> {");
+    out_stream.push_str("\n    match token {");
+    // create match arm for each token
+    for token in &syntax.punctuation {
+        out_stream.push_str(&format!(
+            "\n        \"{}\" => Some(SyntaxKind::{}),",
+            token.value,
+            token.name.to_case(Case::UpperCamel)
+        ));
+    }
+    out_stream.push_str(&format!("\n        {} => {},", "_", "None"));
+
+    out_stream.push_str("\n    }");
+    out_stream.push_str("\n}");
 
     let out_dir =
         std::path::PathBuf::from(std::env::var("OUT_DIR").expect("Could not get OUT_DIR"));
 
     let out_file = out_dir.join("syntax_enum.rs");
-    std::fs::write(&out_file, tokens.as_bytes()).expect("Could not write syntax_enum.rs");
+    std::fs::write(&out_file, out_stream.as_bytes()).expect("Could not write syntax_enum.rs");
 
     p!("syntax: {:?}", out_file);
 }
