@@ -1,12 +1,12 @@
 include!(concat!(env!("OUT_DIR"), "/syntax_enum.rs"));
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Location {
     pub row: usize,
     pub column: usize,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Token {
     pub text: String,
     pub metadata: TokenMetadata,

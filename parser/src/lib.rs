@@ -1,25 +1,27 @@
 use syntax::Token;
 
-pub struct Parser<'a> {
-    pub tokens: &'a Vec<Token>,
-    pub directives: &'a Vec<String>,
+pub struct Parser {
+    pub tokens: Vec<Token>,
+    pub directives: Vec<String>,
 }
 
-impl<'a> Parser<'a> {
-    pub fn new(tokens: &'a Vec<Token>, directives: &'a Vec<String>) -> Self {
-        Self { tokens, directives }
+impl Parser {
+    pub fn new<T: AsRef<Vec<Token>>, U: AsRef<Vec<String>>>(tokens: T, directives: U) -> Self {
+        Self {
+            tokens: tokens.as_ref().clone(),
+            directives: directives.as_ref().clone(),
+        }
     }
 }
 
-impl<'a> Parser<'a> {
+impl Parser {
     pub fn parse(&self) {
-        #[cfg(feature = "debug")]
         {
-            for directive in self.directives {
+            for directive in self.directives.iter() {
                 println!("directive: {:?}", directive);
             }
 
-            for token in self.tokens {
+            for token in self.tokens.iter() {
                 println!("{:?}", token);
             }
         }

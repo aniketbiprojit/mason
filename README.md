@@ -1,5 +1,12 @@
 ## Mason - A Compiler
 
+WIP
+
+- [x] A small lexer
+- [ ] An inefficient parser
+- [ ] Generated assembly code
+- [ ] LSP
+
 Dev:
 
 ```
