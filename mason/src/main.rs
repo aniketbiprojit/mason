@@ -6,8 +6,14 @@ fn main() {
 
     let lexer = &mut lexer::Lexer::new(&source);
     lexer.tokenize();
+    #[cfg(feature = "debug")]
+    {
+        for directive in &lexer.directives {
+            println!("directive: {:?}", directive);
+        }
 
-    for token in &lexer.tokens {
-        println!("{:?}", token);
+        for token in &lexer.tokens {
+            println!("{:?}", token);
+        }
     }
 }

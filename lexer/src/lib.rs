@@ -96,7 +96,6 @@ impl Lexer {
         self.trim_left();
 
         while self.is_not_empty() && self.get_current_char() == '#' {
-            println!("directive line encountered {}", self.row);
             self.drop_line();
         }
 
@@ -172,8 +171,6 @@ impl Lexer {
                 .expect("unexpected character or end of file");
 
             let text = &self.get_current_buffer()[0..*text_length].to_string();
-
-            println!("text length {}", text);
 
             self.cursor += text_length + 2;
             let column = self.column;
