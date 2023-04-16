@@ -24,6 +24,7 @@ struct Kind {
 struct SyntaxKind {
     punctuation: Vec<Kind>,
     literal: Vec<Kind>,
+    types: Vec<String>,
 }
 
 fn main() {
@@ -51,11 +52,12 @@ fn main() {
     let mut out_stream = String::new();
 
     out_stream.push_str(&format!(
-        "{}\n{}\n{}\n{}\n{}",
+        "{}\n{}\n{}\n{}\n{}\n{}",
         "#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]",
         "pub enum TokenType {",
         "   Punctuation,",
         "   Literal,",
+        "   Identifier,",
         "}\n\n"
     ));
 
@@ -72,21 +74,25 @@ fn main() {
         out_stream.push_str(&format!("\n    {},", token.name.to_case(Case::UpperCamel)));
     }
 
+    for token in &syntax.types {
+        out_stream.push_str(&format!("\n    {},", token.to_case(Case::UpperCamel)));
+    }
+
     out_stream.push_str("\n}");
 
     out_stream.push_str(
-        "\n\n#[derive(Debug, Clone)]\npub struct Token {\
+        "\n\n#[derive(Debug, Clone)]\npub struct TokenMetadata {\
         \n    pub kind: SyntaxKind,\
         \n    pub token_type: TokenType,\n\
     }",
     );
 
-    out_stream.push_str("\n\npub fn match_token(token: &str) -> Option<Token> {");
+    out_stream.push_str("\n\npub fn match_operator(token: &str) -> Option<TokenMetadata> {");
     out_stream.push_str("\n    let token = match token {");
 
     for token in &syntax.punctuation {
         out_stream.push_str(&format!(
-            "\n        \"{}\" => Some(Token {{
+            "\n        \"{}\" => Some(TokenMetadata {{
             kind: SyntaxKind::{}, 
             token_type: TokenType::Punctuation 
         }}),",
@@ -95,14 +101,23 @@ fn main() {
         ));
     }
 
-    for token in &syntax.literal {
+    out_stream.push_str(&format!("\n        {} => {},", "_", "None"));
+
+    out_stream.push_str("\n    };");
+    out_stream.push_str("\n    token");
+    out_stream.push_str("\n}");
+
+    out_stream.push_str("\n\npub fn match_identifier(token: &str) -> Option<TokenMetadata> {");
+    out_stream.push_str("\n    let token = match token {");
+
+    for token in &syntax.types {
         out_stream.push_str(&format!(
-            "\n        \"{}\" => Some(Token {{
+            "\n        \"{}\" => Some(TokenMetadata {{
             kind: SyntaxKind::{}, 
-            token_type: TokenType::Literal 
+            token_type: TokenType::Identifier 
         }}),",
-            token.value,
-            token.name.to_case(Case::UpperCamel)
+            token,
+            token.to_case(Case::UpperCamel)
         ));
     }
 

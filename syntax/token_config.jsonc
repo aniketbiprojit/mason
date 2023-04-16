@@ -1,26 +1,17 @@
 {
+  "types": ["int", "float", "char", "bool", "void"],
+  // literals
   "literal": [
     {
-      "name": "integer",
-      "value": "int"
+      "name": "numeric_literal",
+      "value": "numeric_literal"
     },
     {
-      "name": "float",
-      "value": "float"
-    },
-    {
-      "name": "char",
-      "value": "char"
-    },
-    {
-      "name": "boolean",
-      "value": "bool"
-    },
-    {
-      "name": "null",
-      "value": "null"
+      "name": "string_literal",
+      "value": "string_literal"
     }
   ],
+  // punctuations
   "punctuation": [
     {
       "value": ";",
