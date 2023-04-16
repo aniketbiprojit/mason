@@ -55,11 +55,19 @@ impl Lexer {
         !self.is_not_empty()
     }
 
+    fn get_current_buffer(&self) -> &str {
+        &self.source[self.cursor..]
+    }
+}
+
+impl Lexer {
     fn get_current_char(&mut self) -> char {
-        self.source
+        let current_char = self
+            .source
             .chars()
             .nth(self.cursor)
-            .expect("No character found")
+            .expect("No character found");
+        current_char
     }
 
     fn trim_left(&mut self) {
@@ -86,10 +94,6 @@ impl Lexer {
         self.row += 1;
 
         self.trim_left();
-    }
-
-    fn get_current_buffer(&self) -> String {
-        self.source[self.cursor..].to_string()
     }
 
     fn next_token(&mut self) -> Option<Token> {
@@ -132,7 +136,9 @@ impl Lexer {
             let text_length = self
                 .get_current_buffer()
                 .find(|c: char| !c.is_alphanumeric())
-                .expect("unexpected character");
+                .expect(
+                    "unexpected character encountered - only alphanumeric characters are allowed",
+                );
 
             let text = &self.get_current_buffer()[0..text_length].to_string();
 
@@ -168,7 +174,7 @@ impl Lexer {
         if current_char == '"' {
             let text_length = &self.get_current_buffer()[1..]
                 .find(|c: char| c == '"')
-                .expect("unexpected character or end of file");
+                .expect("unclosed string literal");
 
             let text = &self.get_current_buffer()[0..*text_length].to_string();
 
@@ -187,7 +193,12 @@ impl Lexer {
             ));
         }
 
-        return None;
+        panic!(
+            "unexpected character encountered: {}:{}:{}. \
+            If inside a string, check for unclosed quotes. \
+            Escaped characters are not supported.",
+            current_char, self.row, self.column
+        );
     }
 
     pub fn tokenize(&mut self) {
