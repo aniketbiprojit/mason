@@ -1,16 +1,16 @@
 use syntax::{match_identifier, match_operator, SyntaxKind, TokenMetadata};
 
 #[derive(Debug)]
-struct Location {
-    row: usize,
-    column: usize,
+pub struct Location {
+    pub row: usize,
+    pub column: usize,
 }
 
 #[derive(Debug)]
-struct Token {
-    text: String,
-    metadata: TokenMetadata,
-    location: Location,
+pub struct Token {
+    pub text: String,
+    pub metadata: TokenMetadata,
+    pub location: Location,
 }
 
 impl Token {
@@ -30,8 +30,8 @@ pub struct Lexer {
     row_start: usize,
     column: usize,
     row: usize,
-    tokens: Vec<Token>,
-    directives: Vec<String>,
+    pub tokens: Vec<Token>,
+    pub directives: Vec<String>,
 }
 
 impl Lexer {
@@ -49,6 +49,10 @@ impl Lexer {
 
     fn is_not_empty(&self) -> bool {
         self.cursor < self.source.len()
+    }
+
+    fn is_empty(&self) -> bool {
+        !self.is_not_empty()
     }
 
     fn get_current_char(&mut self) -> char {
@@ -96,7 +100,35 @@ impl Lexer {
             self.drop_line();
         }
 
+        if self.is_empty() {
+            return None;
+        }
+
         let current_char = self.get_current_char();
+
+        if current_char.is_numeric() {
+            let text_length = self
+                .get_current_buffer()
+                .find(|c: char| !c.is_numeric())
+                .expect("unexpected character");
+
+            let text = &self.get_current_buffer()[0..text_length].to_string();
+
+            self.cursor += text_length;
+            let column = self.column;
+            self.column += text_length;
+
+            return Some(Token::new(
+                text.to_string(),
+                match_identifier(&text).unwrap_or(TokenMetadata {
+                    kind: SyntaxKind::NumericLiteral,
+                    token_type: syntax::TokenType::Literal,
+                }),
+                self.row,
+                column,
+            ));
+        }
+
         if current_char.is_alphabetic() {
             let text_length = self
                 .get_current_buffer()
@@ -134,6 +166,30 @@ impl Lexer {
             ));
         }
 
+        if current_char == '"' {
+            let text_length = &self.get_current_buffer()[1..]
+                .find(|c: char| c == '"')
+                .expect("unexpected character or end of file");
+
+            let text = &self.get_current_buffer()[0..*text_length].to_string();
+
+            println!("text length {}", text);
+
+            self.cursor += text_length + 2;
+            let column = self.column;
+            self.column += text_length + 2;
+
+            return Some(Token::new(
+                text.to_string(),
+                TokenMetadata {
+                    kind: SyntaxKind::StringLiteral,
+                    token_type: syntax::TokenType::Literal,
+                },
+                self.row,
+                column,
+            ));
+        }
+
         return None;
     }
 
@@ -141,7 +197,6 @@ impl Lexer {
         let mut next_token = self.next_token();
         while next_token.is_some() {
             let token = next_token.unwrap();
-            println!("next token {:?} {}", token.location, token.text);
 
             self.tokens.push(token);
 

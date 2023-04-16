@@ -5,6 +5,9 @@ fn main() {
     let source = std::fs::read_to_string(filename).expect("Could not read file");
 
     let lexer = &mut lexer::Lexer::new(&source);
+    lexer.tokenize();
 
-    lexer.tokenize()
+    for token in &lexer.tokens {
+        println!("{:?}", token);
+    }
 }
