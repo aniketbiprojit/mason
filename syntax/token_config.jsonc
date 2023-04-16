@@ -1,4 +1,26 @@
 {
+  "literal": [
+    {
+      "name": "integer",
+      "value": "int"
+    },
+    {
+      "name": "float",
+      "value": "float"
+    },
+    {
+      "name": "char",
+      "value": "char"
+    },
+    {
+      "name": "boolean",
+      "value": "bool"
+    },
+    {
+      "name": "null",
+      "value": "null"
+    }
+  ],
   "punctuation": [
     {
       "value": ";",

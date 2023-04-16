@@ -15,14 +15,15 @@ fn project_root() -> &'static std::path::Path {
 }
 
 #[derive(Debug, Deserialize)]
-struct Punctuation {
+struct Kind {
     name: String,
     value: String,
 }
 
 #[derive(Debug, Deserialize)]
 struct SyntaxKind {
-    punctuation: Vec<Punctuation>,
+    punctuation: Vec<Kind>,
+    literal: Vec<Kind>,
 }
 
 fn main() {
@@ -47,30 +48,68 @@ fn main() {
 
     let syntax = serde_json::from_str::<SyntaxKind>(&syntax).expect("Could not parse syntax file");
 
-    let mut out_stream = format!(
+    let mut out_stream = String::new();
+
+    out_stream.push_str(&format!(
+        "{}\n{}\n{}\n{}\n{}",
+        "#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]",
+        "pub enum TokenType {",
+        "   Punctuation,",
+        "   Literal,",
+        "}\n\n"
+    ));
+
+    out_stream.push_str(&format!(
         "{}\n{}",
         "#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]", "pub enum SyntaxKind {"
-    );
+    ));
 
     for token in &syntax.punctuation {
         out_stream.push_str(&format!("\n    {},", token.name.to_case(Case::UpperCamel)));
     }
 
+    for token in &syntax.literal {
+        out_stream.push_str(&format!("\n    {},", token.name.to_case(Case::UpperCamel)));
+    }
+
     out_stream.push_str("\n}");
 
-    out_stream.push_str("\n\npub fn match_token(token: &str) -> Option<SyntaxKind> {");
-    out_stream.push_str("\n    match token {");
-    // create match arm for each token
+    out_stream.push_str(
+        "\n\npub struct Token {\
+        \n    pub kind: SyntaxKind,\
+        \n    pub token_type: TokenType,\n\
+    }",
+    );
+
+    out_stream.push_str("\n\npub fn match_token(token: &str) -> Option<Token> {");
+    out_stream.push_str("\n    let token = match token {");
+
     for token in &syntax.punctuation {
         out_stream.push_str(&format!(
-            "\n        \"{}\" => Some(SyntaxKind::{}),",
+            "\n        \"{}\" => Some(Token {{
+            kind: SyntaxKind::{}, 
+            token_type: TokenType::Punctuation 
+        }}),",
             token.value,
             token.name.to_case(Case::UpperCamel)
         ));
     }
+
+    for token in &syntax.literal {
+        out_stream.push_str(&format!(
+            "\n        \"{}\" => Some(Token {{
+            kind: SyntaxKind::{}, 
+            token_type: TokenType::Literal 
+        }}),",
+            token.value,
+            token.name.to_case(Case::UpperCamel)
+        ));
+    }
+
     out_stream.push_str(&format!("\n        {} => {},", "_", "None"));
 
-    out_stream.push_str("\n    }");
+    out_stream.push_str("\n    };");
+    out_stream.push_str("\n    token");
     out_stream.push_str("\n}");
 
     let out_dir =
