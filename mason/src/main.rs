@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+use parser::Parser;
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let filename = args.get(1).expect("No filename provided");
@@ -14,14 +16,8 @@ fn main() {
 
     let lexer = &mut lexer::Lexer::new(&source);
     lexer.tokenize();
-    #[cfg(feature = "debug")]
-    {
-        for directive in &lexer.directives {
-            println!("directive: {:?}", directive);
-        }
 
-        for token in &lexer.tokens {
-            println!("{:?}", token);
-        }
-    }
+    let parser = Parser::new(&lexer.tokens, &lexer.directives);
+
+    parser.parse();
 }

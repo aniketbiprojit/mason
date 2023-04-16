@@ -1,27 +1,4 @@
-use syntax::{match_identifier, match_operator, SyntaxKind, TokenMetadata};
-
-#[derive(Debug)]
-pub struct Location {
-    pub row: usize,
-    pub column: usize,
-}
-
-#[derive(Debug)]
-pub struct Token {
-    pub text: String,
-    pub metadata: TokenMetadata,
-    pub location: Location,
-}
-
-impl Token {
-    fn new(text: String, metadata: TokenMetadata, row: usize, column: usize) -> Self {
-        Self {
-            text,
-            metadata,
-            location: Location { row, column },
-        }
-    }
-}
+use syntax::{match_identifier, match_operator, SyntaxKind, Token, TokenMetadata};
 
 #[derive(Debug)]
 pub struct Lexer {

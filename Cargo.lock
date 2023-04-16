@@ -29,6 +29,14 @@ name = "mason"
 version = "0.1.0"
 dependencies = [
  "lexer",
+ "parser",
+]
+
+[[package]]
+name = "parser"
+version = "0.1.0"
+dependencies = [
+ "syntax",
 ]
 
 [[package]]

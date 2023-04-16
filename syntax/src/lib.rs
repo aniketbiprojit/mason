@@ -1,15 +1,24 @@
 include!(concat!(env!("OUT_DIR"), "/syntax_enum.rs"));
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+#[derive(Debug)]
+pub struct Location {
+    pub row: usize,
+    pub column: usize,
+}
 
-    #[test]
-    fn init_token() {
-        let token = TokenMetadata {
-            kind: SyntaxKind::Add,
-            token_type: TokenType::Punctuation,
-        };
-        println!("{:?}", token);
+#[derive(Debug)]
+pub struct Token {
+    pub text: String,
+    pub metadata: TokenMetadata,
+    pub location: Location,
+}
+
+impl Token {
+    pub fn new(text: String, metadata: TokenMetadata, row: usize, column: usize) -> Self {
+        Self {
+            text,
+            metadata,
+            location: Location { row, column },
+        }
     }
 }
