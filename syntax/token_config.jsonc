@@ -23,10 +23,6 @@
   ],
   "punctuation": [
     {
-      "value": "#",
-      "name": "hash"
-    },
-    {
       "value": ";",
       "name": "semicolon"
     },

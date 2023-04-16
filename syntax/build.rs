@@ -75,7 +75,7 @@ fn main() {
     out_stream.push_str("\n}");
 
     out_stream.push_str(
-        "\n\npub struct Token {\
+        "\n\n#[derive(Debug, Clone)]\npub struct Token {\
         \n    pub kind: SyntaxKind,\
         \n    pub token_type: TokenType,\n\
     }",
