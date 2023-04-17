@@ -4,6 +4,7 @@ WIP
 
 - [x] A small lexer
 - [ ] An inefficient parser
+- [ ] A better parser
 - [ ] Generated assembly code
 - [ ] LSP
 
