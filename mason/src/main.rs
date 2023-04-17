@@ -19,6 +19,15 @@ fn main() {
     let lexer = &mut lexer::Lexer::new(&source);
     lexer.tokenize();
 
+    #[cfg(feature = "debug")]
+    {
+        let serialized = lexer.serial();
+
+        println!("{:}", serialized);
+
+        std::fs::write(".debug/debug-lexer-output.json", serialized)
+            .expect("Could not write to file");
+    }
     let parser = Parser::new(&lexer.tokens);
 
     parser.parse();

@@ -68,7 +68,7 @@ fn main() {
 
     out_stream.push_str(&format!(
         "{}\n{}\n{}\n{}\n{}\n{}",
-        "#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]",
+        "#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]",
         "pub enum TokenType {",
         "   Punctuation,",
         "   Literal,",
@@ -78,7 +78,8 @@ fn main() {
 
     out_stream.push_str(&format!(
         "{}\n{}",
-        "#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]", "pub enum SyntaxKind {"
+        "#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]",
+        "pub enum SyntaxKind {"
     ));
 
     let vec: Vec<&Kind> = syntax
@@ -97,7 +98,7 @@ fn main() {
     out_stream.push_str("\n}");
 
     out_stream.push_str(
-        "\n\n#[derive(Debug, Clone)]\npub struct TokenMetadata {\
+        "\n\n#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]\npub struct TokenMetadata {\
         \n    pub kind: SyntaxKind,\
         \n    pub token_type: TokenType,\n\
         \n    pub text: String,\n\

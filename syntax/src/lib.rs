@@ -1,12 +1,14 @@
+use serde::{Deserialize, Serialize};
+
 include!(concat!(env!("OUT_DIR"), "/syntax_enum.rs"));
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Location {
     pub row: usize,
     pub column: usize,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Token {
     pub text: String,
     pub metadata: TokenMetadata,

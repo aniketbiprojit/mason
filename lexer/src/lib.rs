@@ -164,15 +164,18 @@ impl Lexer {
         }
 
         if current_char == '"' {
-            let text_length = &self.get_current_buffer()[1..]
+            self.cursor += 1;
+            self.column += 1;
+
+            let text_length = self.get_current_buffer()[0..]
                 .find(|c: char| c == '"')
                 .expect("unclosed string literal");
 
-            let text = &self.get_current_buffer()[0..*text_length].to_string();
+            let text = &self.get_current_buffer()[0..text_length].to_string();
 
-            self.cursor += text_length + 2;
+            self.cursor += text_length + 1;
             let column = self.column;
-            self.column += text_length + 2;
+            self.column += text_length + 1;
 
             return Some(Token::new(
                 text.to_string(),
@@ -203,6 +206,10 @@ impl Lexer {
 
             next_token = self.next_token();
         }
+    }
+
+    pub fn serial(&self) -> String {
+        serde_json::to_string_pretty(&self.tokens).unwrap()
     }
 }
 

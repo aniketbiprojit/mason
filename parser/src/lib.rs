@@ -15,9 +15,7 @@ impl Parser {
 impl Parser {
     pub fn parse(&self) {
         {
-            for token in self.tokens.iter() {
-                println!("{:?}", token);
-            }
+            todo!("Parse the tokens into AST");
         }
     }
 }

@@ -17,7 +17,7 @@ int main() {
     if(c == 5){
         printf("equal");
     } else{
-        printf("not equal");
+        printf("not equal to 5 != %d", c);
     }
     
     printf("Hello, World!\n");
