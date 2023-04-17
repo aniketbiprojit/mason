@@ -93,7 +93,6 @@ impl Lexer {
             self.column += text_length;
 
             return Some(Token::new(
-                text.to_string(),
                 match_identifier(&text).unwrap_or(TokenMetadata {
                     kind: SyntaxKind::NumericLiteral,
                     token_type: syntax::TokenType::Literal,
@@ -129,7 +128,6 @@ impl Lexer {
             self.column += text_length;
 
             return Some(Token::new(
-                text.to_string(),
                 match_identifier(&text).unwrap_or(TokenMetadata {
                     kind: SyntaxKind::StringLiteral,
                     token_type: syntax::TokenType::Literal,
@@ -155,12 +153,7 @@ impl Lexer {
                     .unwrap();
             }
 
-            return Some(Token::new(
-                metadata.text.to_string(),
-                metadata,
-                self.row,
-                column,
-            ));
+            return Some(Token::new(metadata, self.row, column));
         }
 
         if current_char == '"' {
@@ -178,7 +171,6 @@ impl Lexer {
             self.column += text_length + 1;
 
             return Some(Token::new(
-                text.to_string(),
                 TokenMetadata {
                     kind: SyntaxKind::StringLiteral,
                     token_type: syntax::TokenType::Literal,

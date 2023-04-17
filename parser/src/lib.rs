@@ -13,9 +13,12 @@ impl Parser {
 }
 
 impl Parser {
-    pub fn parse(&self) {
+    pub fn parse(&mut self) {
+        #[cfg(feature = "debug")]
         {
-            todo!("Parse the tokens into AST");
+            for token in self.tokens.iter() {
+                println!("{:?}", token);
+            }
         }
     }
 }

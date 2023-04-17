@@ -10,15 +10,13 @@ pub struct Location {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Token {
-    pub text: String,
     pub metadata: TokenMetadata,
     pub location: Location,
 }
 
 impl Token {
-    pub fn new(text: String, metadata: TokenMetadata, row: usize, column: usize) -> Self {
+    pub fn new(metadata: TokenMetadata, row: usize, column: usize) -> Self {
         Self {
-            text,
             metadata,
             location: Location { row, column },
         }

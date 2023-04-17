@@ -14,12 +14,12 @@ WIP
 
 Dev:
 
-```
+```bash
 cargo watch -x "run --features debug -- hello.c"
 ```
 
 Prod:
 
-```
+```bash
 cargo run --release -- hello.c
 ```

@@ -26,7 +26,7 @@ fn main() {
         std::fs::write(".debug/debug-lexer-output.json", serialized)
             .expect("Could not write to file");
     }
-    let parser = Parser::new(&lexer.tokens);
+    let mut parser = Parser::new(&lexer.tokens);
 
     parser.parse();
 }

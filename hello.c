@@ -5,6 +5,8 @@ struct person {
     int age;
 };
 
+int arr[4] = {1,2,3,4};
+
 int main() {
     int a = 2;
     int b = 3;
