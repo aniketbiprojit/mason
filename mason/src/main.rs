@@ -23,8 +23,6 @@ fn main() {
     {
         let serialized = lexer.serial();
 
-        println!("{:}", serialized);
-
         std::fs::write(".debug/debug-lexer-output.json", serialized)
             .expect("Could not write to file");
     }
