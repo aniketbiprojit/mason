@@ -12,12 +12,14 @@ fn main() {
     println!("root: {:?}", root);
     let file_path = root.join(filename);
 
-    let source = std::fs::read_to_string(&file_path).expect("Could not read file");
+    let mut source = std::fs::read_to_string(&file_path).expect("Could not read file");
+
+    source += "\n";
 
     let lexer = &mut lexer::Lexer::new(&source);
     lexer.tokenize();
 
-    let parser = Parser::new(&lexer.tokens, &lexer.directives);
+    let parser = Parser::new(&lexer.tokens);
 
     parser.parse();
 }

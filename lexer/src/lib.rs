@@ -8,7 +8,6 @@ pub struct Lexer {
     column: usize,
     row: usize,
     pub tokens: Vec<Token>,
-    pub directives: Vec<String>,
 }
 
 impl Lexer {
@@ -20,7 +19,6 @@ impl Lexer {
             column: 0,
             row: 0,
             tokens: Vec::new(),
-            directives: Vec::new(),
         }
     }
 
@@ -60,14 +58,14 @@ impl Lexer {
         }
     }
 
-    fn drop_line(&mut self) {
+    fn _drop_line(&mut self) {
         let data = self.source.find(|c| c == '\n');
-        let directive_length = data.unwrap();
-        self.directives
-            .push(self.source[self.cursor..directive_length].to_string());
+        let data_length = data.unwrap();
+        // self.directives
+        //     .push(self.source[self.cursor..directive_length].to_string());
 
-        self.cursor += directive_length;
-        self.column += directive_length;
+        self.cursor += data_length;
+        self.column += data_length;
         self.row += 1;
 
         self.trim_left();
@@ -76,9 +74,9 @@ impl Lexer {
     fn next_token(&mut self) -> Option<Token> {
         self.trim_left();
 
-        while self.is_not_empty() && self.get_current_char() == '#' {
-            self.drop_line();
-        }
+        // while self.is_not_empty() && self.get_current_char() == '/' {
+        //     self.drop_line();
+        // }
 
         if self.is_empty() {
             return None;
@@ -103,19 +101,30 @@ impl Lexer {
                 match_identifier(&text).unwrap_or(TokenMetadata {
                     kind: SyntaxKind::NumericLiteral,
                     token_type: syntax::TokenType::Literal,
+                    text: text.to_string(),
                 }),
                 self.row,
                 column,
             ));
         }
 
-        if current_char.is_alphabetic() {
-            let text_length = self
+        if current_char.is_alphabetic() || current_char == '#' {
+            if current_char == '#' {
+                self.cursor += 1;
+                self.column += 1;
+            }
+
+            let mut text_length = self
                 .get_current_buffer()
                 .find(|c: char| !c.is_alphanumeric())
                 .expect(
                     "unexpected character encountered - only alphanumeric characters are allowed",
                 );
+            if current_char == '#' {
+                self.cursor -= 1;
+                self.column -= 1;
+                text_length += 1;
+            }
 
             let text = &self.get_current_buffer()[0..text_length].to_string();
 
@@ -123,26 +132,41 @@ impl Lexer {
             let column = self.column;
             self.column += text_length;
 
+            // self.cursor += self.source[self.cursor..]
+            //     .find(|c: char| c == '\n')
+            //     .unwrap();
+            println!("text_length: {}", self.get_current_buffer());
+
             return Some(Token::new(
                 text.to_string(),
                 match_identifier(&text).unwrap_or(TokenMetadata {
                     kind: SyntaxKind::StringLiteral,
                     token_type: syntax::TokenType::Literal,
+                    text: text.to_string(),
                 }),
                 self.row,
                 column,
             ));
         }
 
-        let is_punctuation = match_operator(&current_char.to_string());
+        let is_punctuation = match_operator(&self.get_current_buffer());
 
         if is_punctuation.is_some() {
-            self.cursor += 1;
+            let metadata = is_punctuation.unwrap();
+
+            self.cursor += metadata.text.len();
             let column = self.column;
-            self.column += 1;
+            self.column += metadata.text.len();
+
+            if metadata.kind == syntax::SyntaxKind::SingleLineComment {
+                self.cursor += self.source[self.cursor..]
+                    .find(|c: char| c == '\n')
+                    .unwrap();
+            }
+
             return Some(Token::new(
-                current_char.to_string(),
-                is_punctuation.unwrap(),
+                metadata.text.to_string(),
+                metadata,
                 self.row,
                 column,
             ));
@@ -164,6 +188,7 @@ impl Lexer {
                 TokenMetadata {
                     kind: SyntaxKind::StringLiteral,
                     token_type: syntax::TokenType::Literal,
+                    text: text.to_string(),
                 },
                 self.row,
                 column,

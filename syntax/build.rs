@@ -22,9 +22,11 @@ struct Kind {
 
 #[derive(Debug, Deserialize)]
 struct SyntaxKind {
-    punctuation: Vec<Kind>,
+    directive: Vec<Kind>,
+    identifier: Vec<String>,
     literal: Vec<Kind>,
-    types: Vec<String>,
+    double_punctuation: Vec<Kind>,
+    punctuation: Vec<Kind>,
 }
 
 fn main() {
@@ -66,6 +68,10 @@ fn main() {
         "#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]", "pub enum SyntaxKind {"
     ));
 
+    for token in &syntax.double_punctuation {
+        out_stream.push_str(&format!("\n    {},", token.name.to_case(Case::UpperCamel)));
+    }
+
     for token in &syntax.punctuation {
         out_stream.push_str(&format!("\n    {},", token.name.to_case(Case::UpperCamel)));
     }
@@ -74,8 +80,12 @@ fn main() {
         out_stream.push_str(&format!("\n    {},", token.name.to_case(Case::UpperCamel)));
     }
 
-    for token in &syntax.types {
+    for token in &syntax.identifier {
         out_stream.push_str(&format!("\n    {},", token.to_case(Case::UpperCamel)));
+    }
+
+    for token in &syntax.directive {
+        out_stream.push_str(&format!("\n    {},", token.name.to_case(Case::UpperCamel)));
     }
 
     out_stream.push_str("\n}");
@@ -84,20 +94,36 @@ fn main() {
         "\n\n#[derive(Debug, Clone)]\npub struct TokenMetadata {\
         \n    pub kind: SyntaxKind,\
         \n    pub token_type: TokenType,\n\
+        \n    pub text: String,\n\
     }",
     );
 
     out_stream.push_str("\n\npub fn match_operator(token: &str) -> Option<TokenMetadata> {");
     out_stream.push_str("\n    let token = match token {");
 
-    for token in &syntax.punctuation {
+    for token in &syntax.double_punctuation {
         out_stream.push_str(&format!(
-            "\n        \"{}\" => Some(TokenMetadata {{
+            "\n        x if x.starts_with(\"{}\") => Some(TokenMetadata {{
             kind: SyntaxKind::{}, 
-            token_type: TokenType::Punctuation 
+            token_type: TokenType::Punctuation,
+            text: \"{}\".to_string(),
         }}),",
             token.value,
-            token.name.to_case(Case::UpperCamel)
+            token.name.to_case(Case::UpperCamel),
+            token.value,
+        ));
+    }
+
+    for token in &syntax.punctuation {
+        out_stream.push_str(&format!(
+            "\n        x if x.starts_with(\"{}\") => Some(TokenMetadata {{
+            kind: SyntaxKind::{}, 
+            token_type: TokenType::Punctuation,
+            text: \"{}\".to_string(),
+        }}),",
+            token.value,
+            token.name.to_case(Case::UpperCamel),
+            token.value
         ));
     }
 
@@ -110,14 +136,29 @@ fn main() {
     out_stream.push_str("\n\npub fn match_identifier(token: &str) -> Option<TokenMetadata> {");
     out_stream.push_str("\n    let token = match token {");
 
-    for token in &syntax.types {
+    for token in &syntax.identifier {
         out_stream.push_str(&format!(
             "\n        \"{}\" => Some(TokenMetadata {{
             kind: SyntaxKind::{}, 
-            token_type: TokenType::Identifier 
+            token_type: TokenType::Identifier,
+            text: \"{}\".to_string(),
         }}),",
             token,
-            token.to_case(Case::UpperCamel)
+            token.to_case(Case::UpperCamel),
+            token
+        ));
+    }
+
+    for token in &syntax.directive {
+        out_stream.push_str(&format!(
+            "\n        \"{}\" => Some(TokenMetadata {{
+            kind: SyntaxKind::{}, 
+            token_type: TokenType::Identifier,
+            text: \"{}\".to_string(),
+        }}),",
+            token.value,
+            token.name.to_case(Case::UpperCamel),
+            token.value
         ));
     }
 

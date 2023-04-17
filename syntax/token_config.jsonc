@@ -1,5 +1,7 @@
+// NOTE: only single line comments are supported
 {
-  "types": ["int", "float", "char", "bool", "void"],
+  "directive": [{ "value": "#include", "name": "include" }],
+  "identifier": ["int", "float", "char", "bool", "void"],
   // literals
   "literal": [
     {
@@ -11,8 +13,13 @@
       "value": "string_literal"
     }
   ],
+  "double_punctuation": [{ "value": "//", "name": "single_line_comment" }],
   // punctuations
   "punctuation": [
+    {
+      "value": "=",
+      "name": "assignment"
+    },
     {
       "value": ";",
       "name": "semicolon"
