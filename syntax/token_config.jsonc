@@ -1,7 +1,16 @@
 // NOTE: only single line comments are supported
 {
   "directive": [{ "value": "#include", "name": "include" }],
-  "identifier": ["int", "float", "char", "bool", "void", "if", "else"],
+  "identifier": [
+    "int",
+    "float",
+    "char",
+    "bool",
+    "void",
+    "if",
+    "else",
+    "struct"
+  ],
   // literals
   "literal": [
     {
@@ -66,6 +75,10 @@
     {
       "value": "-",
       "name": "subtract"
+    },
+    {
+      "value": "*",
+      "name": "multiply_or_reference"
     },
     {
       "value": "/",

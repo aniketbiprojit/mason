@@ -74,10 +74,6 @@ impl Lexer {
     fn next_token(&mut self) -> Option<Token> {
         self.trim_left();
 
-        // while self.is_not_empty() && self.get_current_char() == '/' {
-        //     self.drop_line();
-        // }
-
         if self.is_empty() {
             return None;
         }
@@ -131,11 +127,6 @@ impl Lexer {
             self.cursor += text_length;
             let column = self.column;
             self.column += text_length;
-
-            // self.cursor += self.source[self.cursor..]
-            //     .find(|c: char| c == '\n')
-            //     .unwrap();
-            println!("text_length: {}", self.get_current_buffer());
 
             return Some(Token::new(
                 text.to_string(),
