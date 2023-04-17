@@ -14,7 +14,7 @@ fn project_root() -> &'static std::path::Path {
     std::path::Path::new(MANIFEST).ancestors().nth(1).unwrap()
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 struct Kind {
     name: String,
     value: String,
@@ -23,7 +23,10 @@ struct Kind {
 #[derive(Debug, Deserialize)]
 struct SyntaxKind {
     directive: Vec<Kind>,
-    identifier: Vec<String>,
+    #[serde(rename = "identifier")]
+    outer_identifier: Vec<String>,
+    #[serde(skip)]
+    identifier: Vec<Kind>,
     literal: Vec<Kind>,
     double_punctuation: Vec<Kind>,
     punctuation: Vec<Kind>,
@@ -49,7 +52,17 @@ fn main() {
     // join
     let syntax: String = syntax.join("\n");
 
-    let syntax = serde_json::from_str::<SyntaxKind>(&syntax).expect("Could not parse syntax file");
+    let mut syntax =
+        serde_json::from_str::<SyntaxKind>(&syntax).expect("Could not parse syntax file");
+
+    syntax.identifier = syntax
+        .outer_identifier
+        .iter()
+        .map(|name| Kind {
+            name: name.to_string(),
+            value: name.to_string(),
+        })
+        .collect();
 
     let mut out_stream = String::new();
 
@@ -68,23 +81,16 @@ fn main() {
         "#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]", "pub enum SyntaxKind {"
     ));
 
-    for token in &syntax.double_punctuation {
-        out_stream.push_str(&format!("\n    {},", token.name.to_case(Case::UpperCamel)));
-    }
+    let vec: Vec<&Kind> = syntax
+        .double_punctuation
+        .iter()
+        .chain(syntax.punctuation.iter())
+        .chain(syntax.literal.iter())
+        .chain(syntax.identifier.iter())
+        .chain(syntax.directive.iter())
+        .collect();
 
-    for token in &syntax.punctuation {
-        out_stream.push_str(&format!("\n    {},", token.name.to_case(Case::UpperCamel)));
-    }
-
-    for token in &syntax.literal {
-        out_stream.push_str(&format!("\n    {},", token.name.to_case(Case::UpperCamel)));
-    }
-
-    for token in &syntax.identifier {
-        out_stream.push_str(&format!("\n    {},", token.to_case(Case::UpperCamel)));
-    }
-
-    for token in &syntax.directive {
+    for token in vec {
         out_stream.push_str(&format!("\n    {},", token.name.to_case(Case::UpperCamel)));
     }
 
@@ -101,20 +107,13 @@ fn main() {
     out_stream.push_str("\n\npub fn match_operator(token: &str) -> Option<TokenMetadata> {");
     out_stream.push_str("\n    let token = match token {");
 
-    for token in &syntax.double_punctuation {
-        out_stream.push_str(&format!(
-            "\n        x if x.starts_with(\"{}\") => Some(TokenMetadata {{
-            kind: SyntaxKind::{}, 
-            token_type: TokenType::Punctuation,
-            text: \"{}\".to_string(),
-        }}),",
-            token.value,
-            token.name.to_case(Case::UpperCamel),
-            token.value,
-        ));
-    }
+    let vec: Vec<&Kind> = syntax
+        .double_punctuation
+        .iter()
+        .chain(syntax.punctuation.iter())
+        .collect();
 
-    for token in &syntax.punctuation {
+    for token in &vec {
         out_stream.push_str(&format!(
             "\n        x if x.starts_with(\"{}\") => Some(TokenMetadata {{
             kind: SyntaxKind::{}, 
@@ -123,7 +122,7 @@ fn main() {
         }}),",
             token.value,
             token.name.to_case(Case::UpperCamel),
-            token.value
+            token.value,
         ));
     }
 
@@ -136,20 +135,13 @@ fn main() {
     out_stream.push_str("\n\npub fn match_identifier(token: &str) -> Option<TokenMetadata> {");
     out_stream.push_str("\n    let token = match token {");
 
-    for token in &syntax.identifier {
-        out_stream.push_str(&format!(
-            "\n        \"{}\" => Some(TokenMetadata {{
-            kind: SyntaxKind::{}, 
-            token_type: TokenType::Identifier,
-            text: \"{}\".to_string(),
-        }}),",
-            token,
-            token.to_case(Case::UpperCamel),
-            token
-        ));
-    }
+    let vec: Vec<&Kind> = syntax
+        .identifier
+        .iter()
+        .chain(syntax.directive.iter())
+        .collect();
 
-    for token in &syntax.directive {
+    for token in vec {
         out_stream.push_str(&format!(
             "\n        \"{}\" => Some(TokenMetadata {{
             kind: SyntaxKind::{}, 
