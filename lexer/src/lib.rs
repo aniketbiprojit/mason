@@ -211,7 +211,13 @@ mod tests {
 
     #[test]
     fn init_lexer() {
-        let lexer = Lexer::new("");
-        println!("{:?}", lexer);
+        let mut lexer = Lexer::new("#include <stdio.h>");
+
+        lexer.tokenize();
+        for token in &lexer.tokens {
+            println!("{:?}", token);
+        }
+
+        println!("{}", lexer.serial());
     }
 }
