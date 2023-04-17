@@ -1,7 +1,7 @@
 // NOTE: only single line comments are supported
 {
   "directive": [{ "value": "#include", "name": "include" }],
-  "identifier": ["int", "float", "char", "bool", "void"],
+  "identifier": ["int", "float", "char", "bool", "void", "if", "else"],
   // literals
   "literal": [
     {
@@ -13,7 +13,10 @@
       "value": "string_literal"
     }
   ],
-  "double_punctuation": [{ "value": "//", "name": "single_line_comment" }],
+  "double_punctuation": [
+    { "value": "//", "name": "single_line_comment" },
+    { "value": "==", "name": "equality" }
+  ],
   // punctuations
   "punctuation": [
     {
