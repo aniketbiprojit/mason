@@ -15,11 +15,11 @@ WIP
 Dev:
 
 ```bash
-cargo watch -x "run --features debug -- hello.c"
+cargo watch -x "run --features debug -- test.lux"
 ```
 
 Prod:
 
 ```bash
-cargo run --release -- hello.c
+cargo run --release -- test.lux
 ```
