@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+const x = 2;
+
 struct person {
     char *name;
     int age;

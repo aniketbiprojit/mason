@@ -2,6 +2,7 @@
 {
   "directive": [{ "value": "#include", "name": "include" }],
   "identifier": [
+    "const",
     "int",
     "float",
     "char",
