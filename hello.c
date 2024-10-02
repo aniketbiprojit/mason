@@ -12,6 +12,8 @@ int main() {
     int b = 3;
     int c = a + b;
 
+    float f = 8.6;
+
     struct person p;
     p.name = "John";
     p.age = 20;

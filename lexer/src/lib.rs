@@ -83,10 +83,19 @@ impl Lexer {
         if current_char.is_numeric() {
             let text_length = self
                 .get_current_buffer()
-                .find(|c: char| !c.is_numeric())
+                .find(|c: char| !c.is_numeric() && c != '.')
                 .expect("unexpected character");
 
             let text = &self.get_current_buffer()[0..text_length].to_string();
+
+            // check if it has more than one dot
+
+            if &text.chars().filter(|&c| c == '.').count() > &1 {
+                panic!(
+                    "Expected numeric, value found `{}` {}:{}",
+                    text, self.row, self.column
+                )
+            }
 
             self.cursor += text_length;
             let column = self.column;
