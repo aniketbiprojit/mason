@@ -1,7 +1,7 @@
 // NOTE: only single line comments are supported
 {
   "directive": [],
-  "identifier": [
+  "reserved": [
     "and",
     "class",
     "else",

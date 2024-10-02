@@ -23,10 +23,10 @@ struct Kind {
 #[derive(Debug, Deserialize)]
 struct SyntaxKind {
     directive: Vec<Kind>,
-    #[serde(rename = "identifier")]
-    outer_identifier: Vec<String>,
+    #[serde(rename = "reserved")]
+    outer_reserved: Vec<String>,
     #[serde(skip)]
-    identifier: Vec<Kind>,
+    reserved: Vec<Kind>,
     literal: Vec<Kind>,
     double_punctuation: Vec<Kind>,
     punctuation: Vec<Kind>,
@@ -55,8 +55,8 @@ fn main() {
     let mut syntax =
         serde_json::from_str::<SyntaxKind>(&syntax).expect("Could not parse syntax file");
 
-    syntax.identifier = syntax
-        .outer_identifier
+    syntax.reserved = syntax
+        .outer_reserved
         .iter()
         .map(|name| Kind {
             name: name.to_string(),
@@ -67,12 +67,13 @@ fn main() {
     let mut out_stream = String::new();
 
     out_stream.push_str(&format!(
-        "{}\n{}\n{}\n{}\n{}\n{}",
+        "{}\n{}\n{}\n{}\n{}\n{}\n{}",
         "#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]",
         "pub enum TokenType {",
         "   Punctuation,",
         "   Literal,",
         "   Identifier,",
+        "   Reserved,",
         "}\n\n"
     ));
 
@@ -87,7 +88,7 @@ fn main() {
         .iter()
         .chain(syntax.punctuation.iter())
         .chain(syntax.literal.iter())
-        .chain(syntax.identifier.iter())
+        .chain(syntax.reserved.iter())
         .chain(syntax.directive.iter())
         .collect();
 
@@ -137,7 +138,7 @@ fn main() {
     out_stream.push_str("\n    let token = match token {");
 
     let vec: Vec<&Kind> = syntax
-        .identifier
+        .reserved
         .iter()
         .chain(syntax.directive.iter())
         .collect();
@@ -146,7 +147,7 @@ fn main() {
         out_stream.push_str(&format!(
             "\n        \"{}\" => Some(TokenMetadata {{
             kind: SyntaxKind::{}, 
-            token_type: TokenType::Identifier,
+            token_type: TokenType::Reserved,
             text: \"{}\".to_string(),
         }}),",
             token.value,
