@@ -59,14 +59,14 @@ impl Lexer {
     }
 
     fn _drop_line(&mut self) {
-        let data = self.source.find(|c| c == '\n');
+        let data = self.source[self.cursor..].find(|c| c == '\n');
         let data_length = data.unwrap();
         // self.directives
         //     .push(self.source[self.cursor..directive_length].to_string());
 
         self.cursor += data_length;
-        self.column += data_length;
-        self.row += 1;
+        self.column = 0;
+        // self.row += 1;
 
         self.trim_left();
     }
@@ -90,7 +90,8 @@ impl Lexer {
 
             // check if it has more than one dot
 
-            if &text.chars().filter(|&c| c == '.').count() > &1 {
+            let places = text.chars().filter(|&c| c == '.').count();
+            if &places > &1 {
                 panic!(
                     "Expected numeric, value found `{}` {}:{}",
                     text, self.row, self.column
@@ -101,9 +102,16 @@ impl Lexer {
             let column = self.column;
             self.column += text_length;
 
+            let kind;
+            if places == 0 {
+                kind = SyntaxKind::IntLiteral;
+            } else {
+                kind = SyntaxKind::FloatLiteral;
+            }
+
             return Some(Token::new(
                 match_identifier(&text).unwrap_or(TokenMetadata {
-                    kind: SyntaxKind::NumericLiteral,
+                    kind,
                     token_type: syntax::TokenType::Literal,
                     text: text.to_string(),
                 }),
@@ -112,7 +120,7 @@ impl Lexer {
             ));
         }
 
-        if current_char.is_alphabetic() || current_char == '#' {
+        if current_char.is_alphabetic() || current_char == '_' {
             if current_char == '#' {
                 self.cursor += 1;
                 self.column += 1;
@@ -120,7 +128,7 @@ impl Lexer {
 
             let mut text_length = self
                 .get_current_buffer()
-                .find(|c: char| !c.is_alphanumeric())
+                .find(|c: char| !c.is_alphanumeric() && c != '_')
                 .expect(
                     "unexpected character encountered - only alphanumeric characters are allowed",
                 );
@@ -156,10 +164,9 @@ impl Lexer {
             let column = self.column;
             self.column += metadata.text.len();
 
-            if metadata.kind == syntax::SyntaxKind::SingleLineComment {
-                self.cursor += self.source[self.cursor..]
-                    .find(|c: char| c == '\n')
-                    .unwrap();
+            if metadata.kind == syntax::SyntaxKind::Comment {
+                self._drop_line();
+                return Some(Token::new(metadata, self.row, column));
             }
 
             return Some(Token::new(metadata, self.row, column));
@@ -224,7 +231,7 @@ mod tests {
 
         lexer.tokenize();
         for token in &lexer.tokens {
-            println!("{:?}", token);
+            println!("{:?}", token.metadata);
         }
 
         println!("{}", lexer.serial());

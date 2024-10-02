@@ -27,5 +27,6 @@ int main() {
     }
     
     printf("Hello, World!\n");
+    a==b;
     return 0;
 }

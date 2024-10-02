@@ -1,22 +1,33 @@
 // NOTE: only single line comments are supported
 {
-  "directive": [{ "value": "#include", "name": "include" }],
+  "directive": [],
   "identifier": [
-    "const",
-    "int",
-    "float",
-    "char",
-    "bool",
-    "void",
-    "if",
+    "and",
+    "class",
     "else",
-    "struct"
+    "false",
+    "for",
+    "fun",
+    "if",
+    "nil",
+    "or",
+    "print",
+    "return",
+    "super",
+    "this",
+    "true",
+    "var",
+    "while"
   ],
   // literals
   "literal": [
     {
-      "name": "numeric_literal",
-      "value": "numeric_literal"
+      "name": "int_literal",
+      "value": "int_literal"
+    },
+    {
+      "name": "float_literal",
+      "value": "float_literal"
     },
     {
       "name": "string_literal",
@@ -24,78 +35,88 @@
     }
   ],
   "double_punctuation": [
-    { "value": "//", "name": "single_line_comment" },
-    { "value": "==", "name": "equality" }
+    {
+      "value": "==",
+      "name": "EQUAL_EQUAL"
+    },
+    {
+      "value": "!=",
+      "name": "BANG_EQUAL"
+    },
+    {
+      "value": "<=",
+      "name": "LESS_EQUAL"
+    },
+    {
+      "value": ">=",
+      "name": "GREATER_EQUAL"
+    },
+    {
+      "value": "//",
+      "name": "COMMENT"
+    }
   ],
   // punctuations
   "punctuation": [
     {
-      "value": "=",
-      "name": "assignment"
-    },
-    {
-      "value": ";",
-      "name": "semicolon"
-    },
-    {
-      "value": ",",
-      "name": "comma"
+      "value": "!",
+      "name": "BANG"
     },
     {
       "value": "(",
-      "name": "left_parenthesis"
+      "name": "LEFT_PAREN"
     },
     {
       "value": ")",
-      "name": "right_parenthesis"
+      "name": "RIGHT_PAREN"
     },
     {
       "value": "{",
-      "name": "left_brace"
+      "name": "LEFT_BRACE"
     },
     {
       "value": "}",
-      "name": "right_brace"
+      "name": "RIGHT_BRACE"
     },
     {
-      "value": "[",
-      "name": "left_bracket"
+      "value": ";",
+      "name": "SEMICOLON"
     },
     {
-      "value": "]",
-      "name": "right_bracket"
-    },
-    {
-      "value": ".",
-      "name": "dot"
+      "value": ",",
+      "name": "COMMA"
     },
     {
       "value": "+",
-      "name": "add"
+      "name": "PLUS"
     },
     {
       "value": "-",
-      "name": "subtract"
+      "name": "MINUS"
     },
     {
       "value": "*",
-      "name": "multiply_or_reference"
-    },
-    {
-      "value": "/",
-      "name": "divide"
-    },
-    {
-      "value": "%",
-      "name": "modulo"
+      "name": "STAR"
     },
     {
       "value": "<",
-      "name": "less_than"
+      "name": "LESS"
     },
     {
       "value": ">",
-      "name": "greater_than"
+      "name": "GREATER"
+    },
+    {
+      "value": "/",
+      "name": "SLASH"
+    },
+    {
+      "value": ".",
+      "name": "DOT"
+    },
+    {
+      "value": "=",
+      "name": "EQUAL"
     }
   ]
 }

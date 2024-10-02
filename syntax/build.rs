@@ -98,7 +98,7 @@ fn main() {
     out_stream.push_str("\n}");
 
     out_stream.push_str(
-        "\n\n#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]\npub struct TokenMetadata {\
+        "\n\n#[derive(Clone, serde::Serialize, serde::Deserialize)]\npub struct TokenMetadata {\
         \n    pub kind: SyntaxKind,\
         \n    pub token_type: TokenType,\n\
         \n    pub text: String,\n\
